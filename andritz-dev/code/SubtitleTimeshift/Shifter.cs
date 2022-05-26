@@ -26,18 +26,17 @@ namespace SubtitleTimeshift
                     var isMatch = regexSRT.Match(line);
                     if (isMatch.Success)
                     {
-                        var first = isMatch.Groups[1].Value;
-                        var second = isMatch.Groups[2].Value;
-                        line = ShiftTime(line, first, timeSpan);
-                        line = ShiftTime(line, second, timeSpan);
+                        line = ShiftTime(line, isMatch, 1, timeSpan);
+                        line = ShiftTime(line, isMatch, 2, timeSpan);
                     }
                     await streamWriter.WriteLineAsync(line);
                 }
             }
         }
 
-        static private string ShiftTime(string line, string time, TimeSpan timeSpan)
+        static private string ShiftTime(string line, Match isMatch, int group, TimeSpan timeSpan)
         {
+            var time = isMatch.Groups[group].Value;
             var newTime = TimeSpan.Parse(time, new CultureInfo("id-ID")).Add(timeSpan).ToString("hh':'mm':'ss'.'fff", new CultureInfo("en-US"));
             return line.Replace(time, newTime);
         }
